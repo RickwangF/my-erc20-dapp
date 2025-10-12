@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import CheckMainnetBalance from "@/app/CheckMainnetBalance";
 import CheckSepoliaTokenBalance from "@/app/CheckSepoliaTokenBalance";
+import TransferToken from "@/app/TransferToken";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
           <ConnectButton />
           <CheckMainnetBalance />
           <CheckSepoliaTokenBalance />
+          <TransferToken />
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
 

@@ -8,7 +8,7 @@ import {
     getDefaultConfig,
     RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
-import {WagmiProvider} from 'wagmi';
+import {WagmiProvider, http} from 'wagmi';
 import {
     mainnet,
     sepolia
@@ -18,12 +18,15 @@ import {
     QueryClient,
 } from "@tanstack/react-query";
 
-
 const config = getDefaultConfig({
     appName: 'my-erc20-dapp',
     projectId: '8b1891b3443d4d7d7da7bc070de5bdae',
     chains: [sepolia, mainnet],
     ssr: true, // If your dApp uses server side rendering (SSR)
+    transports: {
+        [mainnet.id]: http(),
+        [sepolia.id]: http(),
+    }
 });
 
 const queryClient = new QueryClient();
