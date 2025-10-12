@@ -58,10 +58,8 @@ export default function CheckSepoliaTokenBalance() {
                 })
 
                 const { from, to, value } = parsed.args
-
                 console.log(`📡 Transfer 事件: from=${from}, to=${to}, value=${formatUnits(value, 18)}`)
-
-                // 如果跟当前用户有关，就刷新余额
+                //如果跟当前用户有关，就刷新余额
                 if (from === userAddress || to === userAddress) {
                     refetch()
                 }
@@ -73,7 +71,7 @@ export default function CheckSepoliaTokenBalance() {
     if (error) return <p>查询失败：{error.message}</p>
 
     return (
-        <div style={{ padding: 20, border: '1px solid #ffffff', borderRadius: 8, marginTop: 20, cornerRadius: 8 }}>
+        <div style={{ padding: 20, border: '1px solid #ffffff', borderRadius: 8, marginTop: 20}}>
             <h2>Sepolia Token 余额 🪙</h2>
             <p>Token 地址: {utils.formatAddress(tokenAddress)}</p>
             <p>用户地址: {utils.formatAddress(userAddress)}</p>

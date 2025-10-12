@@ -1,20 +1,36 @@
-'use client'
-
-import { useState } from 'react'
-import { useWriteContract } from 'wagmi'
+import { useState, useEffect } from 'react'
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseUnits } from 'viem'
-import erc20Abi from '@/app/const' // 你也可以直接在本文件中定义 ERC20 ABI
+import erc20Abi from '@/app/const'
+import { useBalanceContext } from '@/app/BalanceContext'
 
 export default function TransferToken() {
     const [to, setTo] = useState('')
     const [amount, setAmount] = useState('')
-    const [txHash, setTxHash] = useState<string | null>(null)
+    const [txHash, setTxHash] = useState<string | undefined>()
     const [isLoading, setIsLoading] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
 
     const tokenAddress = '0x0918Bb9AD8a920Dbdbb814d5a379f7005fcbf90c'
+    const { writeContractAsync } = useWriteContract()
 
-    const { writeContract } = useWriteContract()
+    // 监听交易确认
+    const { data: receipt, isLoading: isTxLoading, isSuccess: isTxSuccess, isError } =
+        useWaitForTransactionReceipt({ hash: txHash })
+
+    // 当交易被确认或失败时执行副作用
+    useEffect(() => {
+        if (isTxSuccess) {
+            console.log('交易已上链 ✅', receipt)
+            setIsSuccess(true)
+            setIsLoading(false)
+        }
+        if (isError) {
+            console.error('交易失败 ❌')
+            setIsLoading(false)
+            setIsSuccess(false)
+        }
+    }, [receipt, isTxSuccess, isError])
 
     const handleTransfer = async () => {
         if (!to || !amount) {
@@ -26,46 +42,39 @@ export default function TransferToken() {
             setIsLoading(true)
             setIsSuccess(false)
 
-            // 直接调用 writeContract 官方示例方式
-            const tx = await writeContract({
+            const tx = await writeContractAsync({
                 abi: erc20Abi,
                 address: tokenAddress,
                 functionName: 'transfer',
                 args: [to, parseUnits(amount, 18)],
             })
 
-            console.log('交易已发送:')
-            console.log('交易完成:')
-
-            setIsSuccess(true)
+            console.log('交易已发送，hash:', tx)
+            setTxHash(tx as string)
         } catch (err: any) {
             alert(`转账失败: ${err?.message || err}`)
-            console.error(err)
-        } finally {
             setIsLoading(false)
+            console.error(err)
         }
     }
 
     return (
-        <div style={{ padding: 20, border: '1px solid #ffffff', borderRadius: 8, marginTop: 20, cornerRadius: 8 }}>
+        <div style={{ padding: 20 }}>
             <h3>转账 Token 💸</h3>
-
             <input
                 placeholder="接收地址"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
                 style={{ width: '100%', marginBottom: 10 }}
             />
-
             <input
                 placeholder="转账金额"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 style={{ width: '100%', marginBottom: 10 }}
             />
-
-            <button onClick={handleTransfer} disabled={isLoading}>
-                {isLoading ? '转账中...' : '确定转账'}
+            <button onClick={handleTransfer} disabled={isLoading || isTxLoading}>
+                {isLoading || isTxLoading ? '转账中...' : '确定转账'}
             </button>
 
             {isSuccess && txHash && (

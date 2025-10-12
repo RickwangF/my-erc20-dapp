@@ -17,6 +17,7 @@ import {
     QueryClientProvider,
     QueryClient,
 } from "@tanstack/react-query";
+import { BalanceProvider } from "@/app/BalanceContext";
 
 const config = getDefaultConfig({
     appName: 'my-erc20-dapp',
@@ -59,7 +60,9 @@ export default function RootLayout({
       <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
               <RainbowKitProvider>
-                  {children}
+                  <BalanceProvider>
+                      {children}
+                  </BalanceProvider>
               </RainbowKitProvider>
           </QueryClientProvider>
       </WagmiProvider>
