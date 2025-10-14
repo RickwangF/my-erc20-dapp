@@ -15,7 +15,7 @@ export default function CheckMainnetBalance() {
     if (error) return <p>查询失败：{error.message}</p>
 
     return (
-        <div style={{ padding: 20, border: '1px solid #ffffff', borderRadius: 8, marginTop: 20, border: 8 }}>
+        <div style={{ padding: 20, border: '1px solid #ffffff', borderRadius: 8, marginTop: 20}}>
             <h2>主网地址余额 💰</h2>
             <p>地址: {utils.formatAddress(address)}</p>
             <p>余额: {data?.formatted} {data?.symbol}</p>
