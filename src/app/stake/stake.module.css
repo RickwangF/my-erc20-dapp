@@ -1,0 +1,5 @@
+@reference "tailwindcss";
+
+.whiteBorderContainer {
+    @apply border border-white border-solid p-4 min-w-[520px] rounded-xl;
+}
