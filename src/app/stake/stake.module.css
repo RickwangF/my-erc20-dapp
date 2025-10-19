@@ -3,3 +3,24 @@
 .whiteBorderContainer {
     @apply border border-white border-solid p-4 min-w-[520px] rounded-xl mt-50 flex-1 flex-col items-stretch;
 }
+
+.whitLgBorderContainer {
+    @apply border border-white border-solid p-4 min-w-[650px] rounded-xl mt-50 flex-1 flex-col items-stretch;
+}
+
+.withdrawAmountContainer {
+    @apply flex flex-row items-center p-3 gap-2.5;
+}
+
+.withdrawAmountItem {
+    @apply flex-1 p-3 bg-white rounded-lg;
+}
+
+.withdrawAmountItemTitle {
+    @apply text-sm text-gray-700;
+}
+
+.withdrawAmountItemValue {
+    @apply text-2xl font-semibold text-blue-500;
+}
+

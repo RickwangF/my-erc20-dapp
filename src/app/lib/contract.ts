@@ -1,5 +1,4 @@
 // lib/contract.ts
-import {useAccount} from "wagmi";
 import {BrowserProvider, Contract, parseEther, formatEther, ethers} from 'ethers';
 import abi from '../MetaNodeStakeABI.json';
 import erc20Abi from '../erc20ABI.json';
@@ -19,7 +18,6 @@ async function getTokenContract(address:string) {
 }
 
 export async function approve(tokenAddress: string, contractAddress: string, amount: number) {
-    debugger
     const tokenContact = await getTokenContract(tokenAddress);
     try {
         const allowance: boolean = await tokenContact.approve(contractAddress, ethers.parseUnits(amount.toString(), 18));
@@ -68,7 +66,6 @@ export async function getPID(address: string) {
 
 export async function stake(contractAddress: string, amount: number) {
     try {
-        debugger
         const contract = await getContract(contractAddress);
         // amount 是 ETH 数量，比如 0.1
         const tx = await contract.depositETH({
@@ -82,7 +79,6 @@ export async function stake(contractAddress: string, amount: number) {
 }
 
 export async function unstake(address: string, amount: string) {
-    debugger
     const contract = await getContract(address);
     const pid: number = await getPID(address) as number;
     const tx = await contract.unstake(pid, parseEther(amount));
@@ -90,14 +86,17 @@ export async function unstake(address: string, amount: string) {
     return result;
 }
 
-export async function redeem(address: string, amount: string) {
+export async function withdrawAmount(address: string, user: string) {
     const contract = await getContract(address);
-    const tx = await contract.redeem(parseEther(amount));
-    return tx.wait();
+    const pid: number = await getPID(address) as number;
+    const tx= await contract.withdrawAmount(pid, user);
+    return tx;
 }
 
 export async function withdraw(address: string) {
     const contract = await getContract(address);
-    const tx = await contract.withdraw();
-    return tx.wait();
+    const pid: number = await getPID(address) as number;
+    const result = await contract.withdraw(pid);
+    debugger
+    return result;
 }
