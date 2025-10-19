@@ -51,10 +51,17 @@ export default function TransferToken() {
 
             console.log('交易已发送，hash:', tx)
             setTxHash(tx as string)
-        } catch (err: any) {
-            alert(`转账失败: ${err?.message || err}`)
+        } catch (err: unknown) {
             setIsLoading(false)
-            console.error(err)
+            if (err instanceof Error) {
+                // TS 能识别 err.message
+                alert(`转账失败: ${err.message}`)
+                console.error(err)
+            } else {
+                // 非 Error 类型
+                alert(`转账失败: ${String(err)}`)
+                console.error(err)
+            }
         }
     }
 
