@@ -4,6 +4,7 @@ import {useReadContract, useWatchContractEvent} from 'wagmi'
 import { sepolia } from 'wagmi/chains'
 import {formatUnits, decodeEventLog } from 'viem'
 import utils from '@/app/utils'
+import {useAccount} from "wagmi";
 
 // ERC20 ABI — 包含 balanceOf 和 Transfer 事件
 const erc20Abi = [
@@ -30,9 +31,10 @@ export default function CheckSepoliaTokenBalance() {
 
     // 0x0918Bb9AD8a920Dbdbb814d5a379f7005fcbf90c
     // 0xBA17EFEbe6078918c5866A23DBc20542f1957E14
-    const tokenAddress = '0x0918Bb9AD8a920Dbdbb814d5a379f7005fcbf90c'
-    const userAddress = '0x6eA5F70015c435A85b8F9d9619f5F3D8DA7f665B'
+    const account = useAccount()
 
+    const tokenAddress = '0x0918Bb9AD8a920Dbdbb814d5a379f7005fcbf90c'
+    const userAddress = account.address ?? ''
     // 查询余额
     const { data, isLoading, error, refetch } = useReadContract({
         abi: erc20Abi,

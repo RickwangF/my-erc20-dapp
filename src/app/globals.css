@@ -5,7 +5,18 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+    --font-geist-sans: 'Geist', sans-serif;
+    --font-geist-mono: 'Geist Mono', monospace;
 }
+
+.font-geist-sans {
+    font-family: var(--font-geist-sans);
+}
+
+.font-geist-mono {
+    font-family: var(--font-geist-mono);
+}
+
 
 @theme inline {
   --color-background: var(--background);

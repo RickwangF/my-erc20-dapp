@@ -3,7 +3,7 @@ import {BrowserProvider, Contract, parseEther, formatEther, ethers} from 'ethers
 import abi from '../MetaNodeStakeABI.json';
 import erc20Abi from '../erc20ABI.json';
 
-async function getContract(address:string) {
+export async function getContract(address:string) {
     if (!window.ethereum) throw new Error('No wallet found');
     const provider = new BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();

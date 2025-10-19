@@ -3,9 +3,11 @@
 import { useBalance } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
 import utils from '@/app/utils'
+import {useAccount} from "wagmi";
 
 export default function CheckMainnetBalance() {
-    const address = '0x6eA5F70015c435A85b8F9d9619f5F3D8DA7f665B' // 举例：Bitfinex 热钱包
+    const account = useAccount()
+    const address = account.address ?? '' // 举例：Bitfinex 热钱包
     const { data, isLoading, error } = useBalance({
         address, // 举例：Bitfinex 热钱包
         chainId: mainnet.id,
