@@ -32,7 +32,6 @@ export async function approve(tokenAddress: string, contractAddress: string, amo
 export async function hasAdminRole(acountAddress: string, address: string) {
     const contract = await getContract(address);
     try {
-        debugger
         const isAdmin = await contract.hasRole(await contract.ADMIN_ROLE(), acountAddress);
         return isAdmin;
     } catch (error) {
@@ -50,10 +49,10 @@ export async function allowance(tokenAddress: string, owner: string, spender: st
     }
 }
 
-export async function getStakedAmount(address: string) {
-    const contract = await getContract(address);
-    const pid: number = await getPID(address) as number;
-    const amount = await contract.stakingBalance(pid, address);
+export async function getStakedAmount(contractAddress: string, account: string) {
+    const contract = await getContract(contractAddress);
+    const pid: number = await getPID(contractAddress) as number;
+    const amount = await contract.stakingBalance(pid, account);
     return formatEther(amount);
 }
 
@@ -67,22 +66,28 @@ export async function getPID(address: string) {
     }
 }
 
-export async function stake(tokenAddress:string, contractAddress: string, amount: number) {
+export async function stake(contractAddress: string, amount: number) {
     try {
-        const approved = await approve(tokenAddress, contractAddress, amount);
-        if (!approved) {
-            throw new Error('Approval failed');
-        }
-
         debugger
         const contract = await getContract(contractAddress);
-        const pid = await getPID(contractAddress);
-        const tx = await contract.deposit(pid, ethers.parseUnits(amount.toString(), 18));
+        // amount 是 ETH 数量，比如 0.1
+        const tx = await contract.depositETH({
+            value: ethers.parseEther(amount.toString()),
+        });
         const result = await tx.wait();
         return result;
     } catch (error) {
         console.error('Error during staking:', error);
     }
+}
+
+export async function unstake(address: string, amount: string) {
+    debugger
+    const contract = await getContract(address);
+    const pid: number = await getPID(address) as number;
+    const tx = await contract.unstake(pid, parseEther(amount));
+    const result = await tx.wait();
+    return result;
 }
 
 export async function redeem(address: string, amount: string) {
