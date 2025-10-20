@@ -59,9 +59,12 @@ export default function CheckSepoliaTokenBalance() {
                     topics: log.topics,
                 })
 
-                const { from, to, value } = parsed.args
+                // 这里加上类型断言，告诉 TS args 是一个对象，不是数组
+                const args = parsed.args as unknown as { from: string; to: string; value: bigint }
+
+                const { from, to, value } = args
                 console.log(`📡 Transfer 事件: from=${from}, to=${to}, value=${formatUnits(value, 18)}`)
-                //如果跟当前用户有关，就刷新余额
+
                 if (from === userAddress || to === userAddress) {
                     refetch()
                 }
