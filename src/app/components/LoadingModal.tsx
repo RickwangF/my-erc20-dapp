@@ -60,7 +60,7 @@ export default function LoadingModal({
             fullWidth={fullWidth}
             maxWidth={maxWidth}
             transitionDuration={300}
-            transitionComponent={Fade}
+            TransitionComponent={Fade}
             slotProps={{
                 paper: {
                     sx: {
