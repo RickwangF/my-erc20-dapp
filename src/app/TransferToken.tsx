@@ -16,7 +16,9 @@ export default function TransferToken() {
 
     // 监听交易确认
     const { data: receipt, isLoading: isTxLoading, isSuccess: isTxSuccess, isError } =
-        useWaitForTransactionReceipt({ hash: txHash })
+        useWaitForTransactionReceipt({
+            hash: txHash && txHash.startsWith('0x') ? (txHash as `0x${string}`) : undefined,
+        })
 
     // 当交易被确认或失败时执行副作用
     useEffect(() => {
