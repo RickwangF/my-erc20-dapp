@@ -150,8 +150,8 @@ export default function Page() {
         console.log('Fetching withdrawable amount for account:', account.address);
         try {
             const tx = await withdrawAmount(contractAddress, account.address as string);
-            setAvailableWithdrawAmount(ethers.formatEther(tx.requestAmount))
-            setPendingWithdrawAmount(ethers.formatEther(tx.pendingWithdrawAmount))
+            setAvailableWithdrawAmount(ethers.formatEther(tx.pendingWithdrawAmount))
+            setPendingWithdrawAmount(ethers.formatEther(tx.requestAmount - tx.pendingWithdrawAmount))
             console.log('Withdrawable amount fetched, transaction:', tx);
         } catch (error) {
             console.error('Error fetching withdrawable amount:', error);
