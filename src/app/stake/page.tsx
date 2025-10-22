@@ -12,6 +12,8 @@ import {
     hasAdminRole,
     unstake,
     withdrawAmount,
+    fetchPendingRewards,
+    claimRewards
 } from '../lib/contract';
 import {useEffect, useState} from "react";
 import {useAccount} from "wagmi";
@@ -52,6 +54,7 @@ export default function Page() {
         content: '',
         open: false,
     });
+    const [pendingRewards, setPendingRewards] = useState('');
 
     // Tab 切换事件
     const handleChange = (_: React.SyntheticEvent, newValue: string) => {
@@ -104,6 +107,23 @@ export default function Page() {
         handleWithdrawTokens(availableWithdrawAmount.toString());
     }
 
+    const handleClaimButtonTapped = () => {
+
+        // 先将pendingRewards 转换为数字进行判断
+        if (pendingRewards === '0' || pendingRewards === '' ) {
+            alert('No rewards available to claim!');
+            return;
+        }
+
+        const numericValue = parseFloat(pendingRewards);
+        if (isNaN(numericValue) || numericValue <= 0) {
+            alert('No tokens available for withdrawal!');
+            return;
+        }
+
+        handleClaimRewards();
+    }
+
     const contractAddress = "0x01A01E8B862F10a3907D0fC7f47eBF5d34190341"
 
     const fetchStakeAmount = async () => {
@@ -114,6 +134,17 @@ export default function Page() {
             setStakeAmount(amount);
         } catch (error) {
             console.error('Error fetching staked amount:', error);
+        }
+    };
+
+    const fetchRewards = async () => {
+        console.log('Fetching pending rewards for account:', account.address);
+        try {
+            const rewards = await fetchPendingRewards(contractAddress, account.address as string);
+            console.log('pending rewards: ', rewards);
+            setPendingRewards(rewards === undefined ? '0' : rewards);
+        } catch (error) {
+            console.error('Error fetching pending rewards:', error);
         }
     };
 
@@ -193,8 +224,32 @@ export default function Page() {
         }
     }
 
+    const handleClaimRewards = async () => {
+        console.log('Claiming rewards');
+        setLoadingState({
+            variant: 'loading',
+            title: 'Claiming...',
+            content: 'Please wait while we process your transaction.',
+            open: true,
+        });
+        try {
+            const tx = await claimRewards(contractAddress);
+            console.log('Claim successful, transaction:', tx);
+            setLoadingState({
+                variant: 'success',
+                title: 'Claim Successful',
+                content: 'Your rewards have been successfully claimed.',
+                open: true,
+            });
+            fetchRewards()
+        } catch (e) {
+            console.error('Error during claiming:', e);
+        }
+    }
+
     useEffect(() => {
         fetchStakeAmount()
+        fetchRewards()
         fetchWithdrawAmount()
     }, [account.isConnected]);
 
@@ -305,12 +360,21 @@ export default function Page() {
                                     <p className="text-white text-2xl font-bold">
                                         { stakeAmount }
                                     </p>
-                                    <p className="!mt-20 text-2xl">amount to stake</p>
+                                    <p className="text-white text-xl !pr-3 !pt-5">
+                                        Pending MetaNode
+                                    </p>
+                                    <p className="text-white text-xl font-bold">
+                                        { pendingRewards }
+                                    </p>
+                                    <p className="!mt-10 text-2xl">amount to stake</p>
                                     <div className="h-20">
                                         <TextField id="filled-basic" placeholder="input ETH amount" variant="filled" fullWidth className="bg-white rounded-lg" onChange={ (e) => { handleInputChange(e.target.value) } } />
                                     </div>
                                     <div className="h-20">
                                         <Button variant="contained" color="primary" fullWidth className="bg-blue-600 hover:bg-blue-700 h-15" onClick={ () => { handleButtonTapped() } }> Stake </Button>
+                                    </div>
+                                    <div className="h-20">
+                                        <Button variant="contained" color="primary" fullWidth className="bg-blue-600 hover:bg-blue-700 h-15" onClick={ () => { handleClaimButtonTapped() } }> Claim </Button>
                                     </div>
                                 </div>
                             </TabPanel>

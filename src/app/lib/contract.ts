@@ -78,6 +78,30 @@ export async function stake(contractAddress: string, amount: number) {
     }
 }
 
+export async function fetchPendingRewards(address: string, user: string) {
+    const contract = await getContract(address);
+    const pid: number = await getPID(address) as number;
+    try {
+        const userInfo = await contract.user(pid, user);
+        console.log('userInfo stAmount is', formatEther(userInfo.stAmount));
+        return formatEther(userInfo.pendingMetaNode);
+    } catch (error) {
+        console.error('Error fetching pending rewards:', error);
+    }
+}
+
+export async function claimRewards(address: string) {
+    const contract = await getContract(address);
+    const pid: number = await getPID(address) as number;
+    try {
+        debugger
+        const tx = await contract.claim(pid);
+        return tx;
+    } catch (error) {
+        console.error('Error claiming rewards:', error);
+    }
+}
+
 export async function unstake(address: string, amount: string) {
     const contract = await getContract(address);
     const pid: number = await getPID(address) as number;
